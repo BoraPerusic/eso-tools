@@ -1,24 +1,12 @@
 package org.tatrman.esotools.api.db
 
-import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import org.tatrman.esotools.api.IntegrationTestBase
 
 class DAOTest :
-        StringSpec({
-            // We assume the DB is running via docker-compose up
-            // In a real CI, we'd use Testcontainers, but per plan we use local docker
-
-            // We only run this if we can connect (simple check) because CI might fail otherwise
-            // ideally enabledConfig = ...
-
-            beforeSpec {
-                try {
-                    DatabaseFactory.init()
-                } catch (e: Exception) {
-                    println("Skipping DB tests: ${e.message}")
-                }
-            }
+        IntegrationTestBase({
+            // DB is initialized by IntegrationTestBase
 
             "ProductStockDAO returns correct stock for P001" {
                 val dao = ProductStockDAO()

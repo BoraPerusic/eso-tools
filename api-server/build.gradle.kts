@@ -21,4 +21,7 @@ dependencies {
     implementation(libs.exposed.java.time)
     implementation(libs.hikaricp)
     implementation(libs.mssql.jdbc)
+    
+    testImplementation(libs.testcontainers.mssql)
+    testImplementation(libs.wiremock)
 }
