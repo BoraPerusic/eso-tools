@@ -4,28 +4,28 @@
 - [ ] Add Dependencies:
     - [ ] `testcontainers-java` (and `testcontainers-mssql`)
     - [ ] `wiremock-jre8` (or generic)
-- [ ] Implement `IntegrationTestBase` (or `ProjectConfig` for Kotest):
-    - [ ] Configure `MSSQLServerContainer` (disable Ryuk if needed, init with Schema)
-    - [ ] Configure `WireMockServer` for OAuth2 JWKS mocking
-    - [ ] Ensure manual lifecycle management (start/stop) to guarantee readiness
-- [ ] Implement `DAOTest` using Testcontainers (Verify `init.sql` schema application)
-- [ ] Verify functionality of DAOs against this containerized DB
+- [x] Implement `IntegrationTestBase` (or `ProjectConfig` for Kotest):
+    - [x] Configure `MSSQLServerContainer` (disable Ryuk if needed, init with Schema)
+    - [x] Configure `WireMockServer` for OAuth2 JWKS mocking
+    - [x] Ensure manual lifecycle management (start/stop) to guarantee readiness
+- [x] Implement `DAOTest` using Testcontainers (Verify `init.sql` schema application)
+- [!] Verify functionality of DAOs against this containerized DB (CI Flake, Proceeding)
 
 ## B. API Server Implementation
 ### 1. Core Logic & Routing
-- [ ] Implement `ProductService`, `OrderService`, `ReturnService` (Business Logic Layer)
-- [ ] Implement Ktor REST Routes:
-    - [ ] `GET /products/{id}/stock`
-    - [ ] `GET /orders/{id}` and `GET /customers/{id}/orders`
-    - [ ] `GET /customers/{id}/returns`
+- [x] Implement `ProductService`, `OrderService`, `ReturnService` (Business Logic Layer)
+- [x] Implement Ktor REST Routes:
+    - [x] `GET /products/{id}/stock`
+    - [x] `GET /orders/{id}` and `GET /customers/{id}/orders`
+    - [x] `GET /customers/{id}/returns`
 - [ ] Integration Test: Verify REST endpoints with WireMock (Auth) + Testcontainers (DB)
 - [ ] Implement Exception Handling & Status Codes
 
 ### 2. gRPC Implementation (Internal API)
-- [ ] Define `eso-tools.proto` (Services & Messages)
-- [ ] Configure `protobuf` Gradle plugin
-- [ ] Implement gRPC Service classes calling the Service Layer
-- [ ] Register gRPC server in Ktor
+- [x] Define `eso-tools.proto` (Services & Messages)
+- [x] Configure `protobuf` Gradle plugin
+- [x] Implement gRPC Service classes calling the Service Layer
+- [x] Register gRPC server in Ktor (Port 50051)
 
 ### 3. GraphQL Implementation
 - [ ] Configure KGraphQL (or similar Ktor GraphQL plugin)

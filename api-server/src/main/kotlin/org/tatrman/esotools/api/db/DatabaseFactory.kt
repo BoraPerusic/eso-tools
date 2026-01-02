@@ -6,7 +6,11 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object DatabaseFactory {
+    private var dataSource: HikariDataSource? = null
+
     fun init() {
+        if (dataSource != null) return
+
         val config =
                 HikariConfig().apply {
                     driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
@@ -20,8 +24,8 @@ object DatabaseFactory {
                     transactionIsolation = "TRANSACTION_REPEATABLE_READ"
                     validate()
                 }
-        val dataSource = HikariDataSource(config)
-        Database.connect(dataSource)
+        dataSource = HikariDataSource(config)
+        Database.connect(dataSource!!)
     }
 
     fun <T> query(block: () -> T): T = transaction { block() }

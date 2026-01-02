@@ -32,5 +32,11 @@ fun Application.module() {
         log.error("Failed to initialize database: ${e.message}")
     }
 
-    routing { get("/") { call.respondText("ESO Tools API Server") } }
+    configureRouting()
+
+    // Start gRPC Server
+    io.grpc.ServerBuilder.forPort(50051)
+            .addService(org.tatrman.esotools.api.grpc.EsoServiceGrpcImpl())
+            .build()
+            .start()
 }

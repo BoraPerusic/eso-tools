@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.ktor)
+    alias(libs.plugins.protobuf)
 }
 
 application {
@@ -22,6 +23,41 @@ dependencies {
     implementation(libs.hikaricp)
     implementation(libs.mssql.jdbc)
     
+    // gRPC
+    implementation(libs.protobuf.kotlin)
+    implementation(libs.grpc.protobuf)
+    implementation(libs.grpc.stub)
+    implementation(libs.grpc.netty)
+    implementation(libs.grpc.kotlin.stub)
+    
     testImplementation(libs.testcontainers.mssql)
     testImplementation(libs.wiremock)
+    testImplementation(libs.ktor.server.test.host)
 }
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${libs.versions.protobuf.get()}"
+    }
+    plugins {
+        create("grpc") {
+            artifact = "io.grpc:protoc-gen-grpc-java:${libs.versions.grpc.get()}"
+        }
+        create("grpckt") {
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:${libs.versions.grpcKotlin.get()}:jdk8@jar"
+        }
+    }
+    generateProtoTasks {
+        all().forEach {
+            it.plugins {
+                create("grpc")
+                create("grpckt")
+            }
+            it.builtins {
+                create("kotlin")
+            }
+        }
+    }
+}
+
+
