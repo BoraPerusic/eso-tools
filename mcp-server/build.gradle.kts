@@ -1,0 +1,19 @@
+plugins {
+    alias(libs.plugins.ktor)
+}
+
+application {
+    mainClass.set("org.tatrman.esotools.mcp.ApplicationKt")
+}
+
+dependencies {
+    implementation(libs.ktor.server.core)
+    implementation(libs.ktor.server.netty)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.logback.classic)
+    
+    implementation(libs.mcp.kotlin.sdk)
+}
