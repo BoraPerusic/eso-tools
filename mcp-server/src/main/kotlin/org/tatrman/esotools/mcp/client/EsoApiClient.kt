@@ -6,7 +6,10 @@ import java.io.Closeable
 import java.util.concurrent.TimeUnit
 import org.tatrman.esotools.grpc.*
 
-class EsoApiClient(host: String = "localhost", port: Int = 50051) : Closeable {
+class EsoApiClient(
+        host: String = System.getenv("API_SERVER_HOST") ?: "localhost",
+        port: Int = System.getenv("API_SERVER_PORT")?.toIntOrNull() ?: 50051
+) : Closeable {
 
     private val channel: ManagedChannel =
             ManagedChannelBuilder.forAddress(host, port).usePlaintext().build()
