@@ -1,0 +1,29 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: eso-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Password123!
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Password123! -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+
+  # Placeholders for future services
+  # api-server:
+  #   build: ./api-server
+  #   depends_on:
+  #     sqlserver:
+  #       condition: service_healthy
+  # mcp-server:
+  #   build: ./mcp-server
+  #   depends_on:
+  #     api-server:
+  #       condition: service_started
