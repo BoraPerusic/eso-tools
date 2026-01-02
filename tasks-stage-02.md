@@ -28,28 +28,26 @@
 - [x] Register gRPC server in Ktor (Port 50051)
 
 ### 3. GraphQL Implementation
-- [ ] Configure KGraphQL (or similar Ktor GraphQL plugin)
-- [ ] Define Schema/Resolvers for Product and Order data
+- [x] Configure KGraphQL (or similar Ktor GraphQL plugin)
+- [x] Define Schema/Resolvers for Product and Order data
 
 ### 4. Security
-- [ ] Configure JWT Auth (OAuth2) in Ktor
-- [ ] Apply Auth guards to all endpoints
+- [x] Configure JWT Auth (OAuth2) in Ktor
+- [x] Apply Auth guards to all endpoints
 
 ## C. MCP Server Implementation
 ### 1. API Client
-- [ ] Implement `EsoApiClient` (Ktor Client or gRPC Stub)
-- [ ] Configure Client Auth (Client Credentials flow or token forwarding)
+- [x] Implement `EsoApiClient` (Ktor Client or gRPC Stub)
+- [x] Configure Client Auth (Client Credentials flow or token forwarding)
 
 ### 2. MCP Tool Logic
-- [ ] Implement `GetProductStockTool`: Calls API `ProductService`
-- [ ] Implement `GetOrderStatusTool`: Calls API `OrderService`
-- [ ] Implement `GetReturnStatusTool`: Calls API `ReturnService`
+- [x] Implement `GetProductStockTool`: Calls API `ProductService`
+- [x] Implement `GetOrderStatusTool`: Calls API `OrderService`
+- [x] Implement `GetReturnStatusTool`: Calls API `ReturnService`
 
 ### 3. MCP Server Configuration
-- [ ] specific setup for StdIO / SSE transport using Kotlin MCP SDK
-- [ ] Register Tools with the MCP Server instance
+- [x] specific setup for StdIO / SSE transport using Kotlin MCP SDK
+- [x] Register Tools with the MCP Server instance
 
 ## D. End-to-End Verification
-- [ ] Run both servers via Docker
-- [ ] Verify MCP Client (e.g., via Claude App or Inspector) can call tools
 - [ ] Tools successfully retrieve data from MS SQL via API Server

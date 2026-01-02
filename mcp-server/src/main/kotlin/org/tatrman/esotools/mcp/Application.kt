@@ -1,32 +1,44 @@
 package org.tatrman.esotools.mcp
 
-import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import io.ktor.server.plugins.contentnegotiation.*
-import kotlinx.serialization.json.Json
+import io.modelcontextprotocol.kotlin.sdk.server.Server
+import io.modelcontextprotocol.kotlin.sdk.server.StdioServerTransport
+import io.modelcontextprotocol.kotlin.sdk.types.Implementation
+import io.modelcontextprotocol.kotlin.sdk.types.ServerCapabilities
+import kotlinx.coroutines.runBlocking
+import kotlinx.io.asSink
+import kotlinx.io.asSource
+import kotlinx.io.buffered
+import org.tatrman.esotools.mcp.client.EsoApiClient
 
-fun main() {
-    embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
-            .start(wait = true)
-}
+fun main() = runBlocking {
+        val client = EsoApiClient()
+        val toolsLogic = Tools(client)
 
-fun Application.module() {
-    install(ContentNegotiation) {
-        json(
-                Json {
-                    prettyPrint = true
-                    isLenient = true
-                }
-        )
-    }
+        val transport =
+                StdioServerTransport(
+                        System.`in`.asSource().buffered(),
+                        System.out.asSink().buffered()
+                )
 
-    // TODO: Initialize MCP Server here
-    configureMcp()
-}
+        val server =
+                Server(
+                        serverInfo = Implementation(name = "eso-mcp-server", version = "1.0.0"),
+                        options =
+                                io.modelcontextprotocol.kotlin.sdk.server.ServerOptions(
+                                        capabilities =
+                                                ServerCapabilities(
+                                                        tools =
+                                                                ServerCapabilities.Tools(
+                                                                        listChanged = true
+                                                                )
+                                                )
+                                )
+                )
 
-fun Application.configureMcp() {
-    // Placeholder for MCP SDK initialization
-    log.info("MCP Server configuration placeholder")
+        server.addTool(toolsLogic.listProductStockTool, toolsLogic::productStockCallback)
+        server.addTool(toolsLogic.checkOrderStatusTool, toolsLogic::orderStatusCallback)
+        server.addTool(toolsLogic.checkReturnStatusTool, toolsLogic::returnStatusCallback)
+
+        server.createSession(transport)
+        transport.start()
 }

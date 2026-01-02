@@ -5,6 +5,7 @@ import io.grpc.StatusException
 import org.tatrman.esotools.api.service.OrderService
 import org.tatrman.esotools.api.service.ProductService
 import org.tatrman.esotools.api.service.ReturnService
+import org.tatrman.esotools.grpc.*
 
 class EsoServiceGrpcImpl(
         private val productService: ProductService = ProductService(),

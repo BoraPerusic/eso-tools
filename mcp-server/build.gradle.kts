@@ -1,4 +1,5 @@
 plugins {
+    alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
 }
 
@@ -12,8 +13,10 @@ dependencies {
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.logback.classic)
     
     implementation(libs.mcp.kotlin.sdk)
+    implementation(project(":shared"))
 }
