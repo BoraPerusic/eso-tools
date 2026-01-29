@@ -12,7 +12,7 @@ const router = createRouter({
     {
       path: '/stock',
       name: 'stock',
-      component: () => import('../views/DashboardView.vue'), // Re-using dashboard for now
+      component: () => import('../views/StockView.vue'),
     },
     {
       path: '/orders',

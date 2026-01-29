@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eso-api-server
+  labels:
+    app: eso-api-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eso-api-server
+  template:
+    metadata:
+      labels:
+        app: eso-api-server
+    spec:
+      containers:
+      - name: api-server
+        image: eso-tools/api-server:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        - containerPort: 50051
+        env:
+        - name: DB_URL
+          value: "jdbc:sqlserver://eso-sqlserver:1433;databaseName=EsoToolsDB;encrypt=false"
+        - name: DB_USER
+          value: "sa"
+        - name: DB_PASSWORD
+          value: "Password123!"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eso-api-server
+spec:
+  selector:
+    app: eso-api-server
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+    - name: grpc
+      protocol: TCP
+      port: 50051
+      targetPort: 50051

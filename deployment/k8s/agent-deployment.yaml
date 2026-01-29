@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eso-agent
+  labels:
+    app: eso-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eso-agent
+  template:
+    metadata:
+      labels:
+        app: eso-agent
+    spec:
+      containers:
+      - name: agent
+        image: eso-tools/agent:latest
+        imagePullPolicy: IfNotPresent # Important for local dev images
+        ports:
+        - containerPort: 8000
+        env:
+        - name: MCP_SERVER_SSE_URL
+          value: "http://eso-mcp-server:8080/sse" # Requires mcp-server Service
+        # Assuming Azure keys are in a Secret or ConfigMap, mapping them from env for now if user sets them
+        # For local dev without secret management, we might leave them empty and rely on user port-forward + local .env if running locally?
+        # Or user injects them. Implementation plan didn't specify secret management, keeping as placeholder.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eso-agent
+spec:
+  selector:
+    app: eso-agent
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000

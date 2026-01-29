@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eso-mcp-server
+  labels:
+    app: eso-mcp-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eso-mcp-server
+  template:
+    metadata:
+      labels:
+        app: eso-mcp-server
+    spec:
+      containers:
+      - name: mcp-server
+        image: eso-tools/mcp-server:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: API_SERVER_HOST
+          value: "eso-api-server" # Service name
+        - name: API_SERVER_PORT
+          value: "50051"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eso-mcp-server
+spec:
+  selector:
+    app: eso-mcp-server
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

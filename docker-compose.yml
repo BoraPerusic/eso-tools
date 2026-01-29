@@ -37,13 +37,33 @@ services:
       context: .
       dockerfile: mcp-server/Dockerfile
     container_name: eso-mcp-server
+    ports:
+      - "8081:8080" # Map 8080 internal (SSE) to 8081 host to avoid conflict with api-server
     environment:
       - API_SERVER_HOST=api-server
       - API_SERVER_PORT=50051
+      # Assuming we need to tell it to run in SSE mode if it's not default.
+      # If the Kotlin SDK defaults to Stdio, we might need an arg.
+      # For now, relying on User's statement that it "will be another service" implying it handles it.
     depends_on:
       api-server:
         condition: service_started
-    stdin_open: true # Keep stdin open for MCP stdio transport
-    tty: true # Allocate a pseudo-TTY
-    # Restart policy: unless-stopped, to keep it alive if it crashes or EOFs unexpectedly
+    stdin_open: true
+    tty: true
     restart: unless-stopped
+
+  agent:
+    build:
+      context: ./agent
+      dockerfile: Dockerfile
+    container_name: eso-agent
+    ports:
+      - "8000:8000"
+    environment:
+      - MCP_SERVER_SSE_URL=http://mcp-server:8080/sse
+      # Add Azure keys here or use .env file
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+      - AZURE_OPENAI_DEPLOYMENT_NAME=${AZURE_OPENAI_DEPLOYMENT_NAME}
+    depends_on:
+      - mcp-server

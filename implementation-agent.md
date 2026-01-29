@@ -1,36 +1,58 @@
-# Implementation Plan: AI Agent (Phase 2)
+# Implementation Plan: AI Agent (Phase 3 - Kubernetes)
 
 ## Goal
-Connect the existing Agent logic to the MCP Server via SSE transport to enable real data access.
+Deploy the AI Agent and related services to a local Kubernetes cluster (Rancher Desktop / K3s) instead of Docker Compose.
+
+## Strategy
+1.  **Containerization**: Keep the `Dockerfile`. Use `docker` (or an alias compliant with Rancher) to build.
+2.  **Orchestration**: Replace `docker-compose.yml` with Kubernetes Manifests (`deployment.yaml`, `service.yaml`).
+3.  **Local Testing**:
+    - Build images locally.
+    - Apply manifests to the local cluster (`kubectl apply -f deployment/k8s`).
+    - Port-forward to verify connectivity.
 
 ## Proposed Changes
 
-### [agent] MCP Client Implementation
+### [deployment] Kubernetes Manifests
+#### [NEW] [deployment/k8s/agent-deployment.yaml](file:///Users/bora/Dev/eso-tools/deployment/k8s/agent-deployment.yaml)
+Defines the `Deployment` and `Service` for the Agent.
+- **Image**: `eso-tools/agent:latest` (imagePullPolicy: Never or IfNotPresent for local dev)
+- **Env**: `MCP_SERVER_SSE_URL=http://mcp-server:8080/sse`
 
-#### [NEW] [agent/src/mcp_client/client_manager.py](file:///Users/bora/Dev/eso-tools/agent/src/mcp_client/client_manager.py)
-Implement `MCPClientManager` class that:
-- Connects to `settings.MCP_SERVER_SSE_URL`.
-- Manages the SSE session.
-- Exposes a `get_tools()` method to retrieve available tools.
-- Exposes a `call_tool()` method to execute tools.
+#### [NEW] [deployment/k8s/mcp-server-deployment.yaml](file:///Users/bora/Dev/eso-tools/deployment/k8s/mcp-server-deployment.yaml)
+Defines `Deployment` and `Service` for the MCP Server.
+- **Image**: `eso-tools/mcp-server:latest`
+- **Env**: `API_SERVER_HOST=api-server`, `API_SERVER_PORT=50051`
 
-#### [MODIFY] [agent/src/core/agent.py](file:///Users/bora/Dev/eso-tools/agent/src/core/agent.py)
-Update the LangGraph agent to:
-- Initialize `MCPClientManager` on startup.
-- Fetch tools from MCP and bind them to the LLM.
-- Replace the "Echo" logic with actual LLM + Tool execution.
+#### [NEW] [deployment/k8s/api-server-deployment.yaml](file:///Users/bora/Dev/eso-tools/deployment/k8s/api-server-deployment.yaml)
+Defines `Deployment` and `Service` for the API Server.
 
-#### [MODIFY] [agent/src/main.py](file:///Users/bora/Dev/eso-tools/agent/src/main.py)
-- Manage `MCPClientManager` lifecycle (connect on startup, disconnect on shutdown).
+#### [NEW] [deployment/k8s/sqlserver-deployment.yaml](file:///Users/bora/Dev/eso-tools/deployment/k8s/sqlserver-deployment.yaml)
+Defines `StatefulSet` and `Service` for SQL Server.
+
+### [deployment] Workflow Script
+#### [NEW] [deployment/local-dev.sh](file:///Users/bora/Dev/eso-tools/deployment/local-dev.sh)
+Helper script to:
+1.  Build images.
+2.  Apply manifests.
+3.  Wait for rollout.
 
 ## Verification Plan
 
-### Automated Tests
-- Mock the SSE endpoint in `pytest` to simulate tool responses without a running server.
-- Verify `MCPClientManager` handles connection errors gracefully.
-
 ### Manual Verification
-Since the real MCP server might not be running locally or via SSE easily without the full container setup, we will:
-1.  **Mock Server**: Create a simple python script `mock_sse_server.py` that mimics the MCP SSE protocol for `get_product_stock`.
-2.  **Run Agent**: Connect agent to this mock server.
-3.  **Test Query**: "What is the stock of product X?" -> Should call the mock tool and return data.
+1.  **Build**:
+    ```bash
+    # Assuming 'docker' maps to the local Rancher runtime, or we use a specific build command
+    docker build -t eso-tools/agent:latest ./agent
+    docker build -t eso-tools/mcp-server:latest ./mcp-server
+    # ... others
+    ```
+2.  **Deploy**:
+    ```bash
+    kubectl apply -f deployment/k8s/
+    ```
+3.  **Test**:
+    ```bash
+    kubectl port-forward svc/eso-agent 8000:8000
+    curl http://localhost:8000/health
+    ```
