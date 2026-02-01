@@ -4,8 +4,8 @@ set -e
 echo "Building Docker images..."
 # Using 'docker' assuming it points to the local Rancher/containerd runtime
 docker build -t eso-tools/agent:latest ./agent
-# docker build -t eso-tools/mcp-server:latest ./mcp-server
-# docker build -t eso-tools/api-server:latest ./api-server
+ docker build -t eso-tools/mcp-server:latest ./mcp-server
+ docker build -t eso-tools/api-server:latest ./api-server
 # (Commented out others as I only have 'agent' source code fully ready/scoped for this task, 
 # but in real usage we would build all. For now enabling agent build only to test integration phase)
 
