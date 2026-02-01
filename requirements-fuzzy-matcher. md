@@ -1,0 +1,14 @@
+# Requirements for the Fuzzy Matcher
+This file contains the requirements for the fuzzy matching service and a MCP server.
+
+## The Goal
+We need to build another set of api service + tool-exposing MCP server.
+The service wull provide a fuzzy search in two database tables: Customers and Products.
+Each table will have just two columns : id and name.
+The sevice will accept a call with two parameters:
+entity: either Product or Customer
+text: text to match the name (fuzzy matching)
+The service will return a list of objects :
+[
+  { id: 1, confidence: 0.92}
+] 
