@@ -3,12 +3,23 @@ This file contains the requirements for the fuzzy matching service and a MCP ser
 
 ## The Goal
 We need to build another set of api service + tool-exposing MCP server.
-The service wull provide a fuzzy search in two database tables: Customers and Products.
+The service will provide a fuzzy search in two database tables: Customers and Products.
 Each table will have just two columns : id and name.
 The sevice will accept a call with two parameters:
-entity: either Product or Customer
-text: text to match the name (fuzzy matching)
+- entity: either "product" or "customer"
+- text: text to match the name (fuzzy matching)
 The service will return a list of objects :
 [
-  { id: 1, confidence: 0.92}
-] 
+  { id: 1, name: "Product 1", confidence: 0.92}
+]
+
+## The Tech Stack
+These services and the MNP Server will be built in Python.
+We will use FastAPI for the API service and the MCP server will be built using the MCP Python SDK library.
+From the Python stack we will use:
+- FastAPI
+- MCP Python SDK
+- SQLAlchemy (the database will be MS SQL and will be provided by the environment)
+- Pydantic
+- Python 3.13
+The services will be deployed in Docker containers to K8s / K3s cluster.

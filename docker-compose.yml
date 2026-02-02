@@ -52,16 +52,46 @@ services:
     tty: true
     restart: unless-stopped
 
+  api-fuzzy:
+    build:
+      context: ./api-fuzzy
+      dockerfile: Dockerfile
+    container_name: eso-api-fuzzy
+    ports:
+      - "8001:8001"
+    environment:
+      - DB_SERVER=sqlserver
+      - DB_USER=sa
+      - DB_PASSWORD=Password123!
+      - DB_NAME=ESODB
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  mcp-fuzzy:
+    build:
+      context: ./mcp-fuzzy
+      dockerfile: Dockerfile
+    container_name: eso-mcp-fuzzy
+    ports:
+      - "8002:8000" # MCP Server likely runs on 8000 inside container if using uvicorn/fastapi default
+    environment:
+      - API_FUZZY_URL=http://api-fuzzy:8001
+    depends_on:
+      - api-fuzzy
+    command: [ "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000" ]
+
   agent:
     build:
       context: ./agent
       dockerfile: Dockerfile
     container_name: eso-agent
     ports:
-      - "8000:8000"
+      - "8000:8003" # Remapped agent port to avoid conflict if needed, or keep 8000 if host port is fine
     environment:
       - MCP_SERVER_SSE_URL=http://mcp-server:8080/sse
-      # Add Azure keys here or use .env file
+      # Add new fuzzy mcp server if agent supports multiple. 
+      # For now, just ensuring it's in the compose.
       - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
       - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
       - AZURE_OPENAI_DEPLOYMENT_NAME=${AZURE_OPENAI_DEPLOYMENT_NAME}

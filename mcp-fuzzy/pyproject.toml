@@ -1,0 +1,11 @@
+[project]
+name = "mcp-fuzzy"
+version = "0.1.0"
+description = "MCP wrapper for fuzzy matching service"
+requires-python = ">=3.13"
+dependencies = [
+    "mcp",
+    "httpx",
+    "fastapi",
+    "uvicorn"
+]

@@ -17,6 +17,11 @@ CREATE TABLE Products (
     Type VARCHAR(20) -- 'PURCHASED' or 'MANUFACTURED'
 );
 
+CREATE TABLE Customers (
+    Id VARCHAR(50) PRIMARY KEY,
+    Name NVARCHAR(100)
+);
+
 CREATE TABLE Orders (
     OrderId VARCHAR(50) PRIMARY KEY,
     CustomerId VARCHAR(50),
@@ -37,6 +42,7 @@ CREATE TABLE Returns (
 
 -- Mock Data
 INSERT INTO Products (ProductId, Name, Type) VALUES ('P001', 'Widget A', 'PURCHASED'), ('P002', 'Gadget B', 'MANUFACTURED');
+INSERT INTO Customers (Id, Name) VALUES ('CUST-001', 'Acme Corp'), ('CUST-002', 'Globex Corporation'), ('CUST-003', 'Soylent Corp');
 INSERT INTO Orders (OrderId, CustomerId, Status, PaymentStatus, DeliveryDate, TotalAmount) VALUES 
 ('ORD-001', 'CUST-001', 'COMPLETED', 'PAID', '2023-10-01', 100.00),
 ('ORD-002', 'CUST-001', 'OPEN', 'PENDING', NULL, 50.00);
